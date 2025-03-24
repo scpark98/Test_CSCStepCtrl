@@ -120,13 +120,13 @@ BOOL CTestCSCStepCtrlDlg::OnInitDialog()
 	m_steph.set_style(true);
 	m_steph.set_step_count(6);
 	m_steph.set_margin(24, 8, 24, 8);
-	m_steph.set_texts(_T("step 0"), _T("step 1"), _T("step 2"), _T("step 3"), _T("step 4"), _T("step 5"));
+	m_steph.set_texts(_T("step 0"), _T("스텝 1"), _T("step 2"), _T("스텝 3"), _T("step 4"), _T("스텝 5"));
 	m_steph.set_pos(2);
 	m_steph.set_step_color(1, Gdiplus::Color::Red);
 
 	m_stepv.set_style(false, thumb_style_rect);
 	m_stepv.set_step_count(6);
-	m_stepv.set_texts(_T("step 0"), _T("step 1"), _T("step 2"), _T("step 3"), _T("step 4"), _T("step 5"));
+	m_stepv.set_texts(_T("step 0"), _T("스텝 1"), _T("step 2"), _T("스텝 3"), _T("step 4"), _T("스텝 5"));
 	m_stepv.set_pos(2);
 	m_stepv.set_step_color(1, Gdiplus::Color::Red);
 
