@@ -64,6 +64,9 @@ void CTestCSCStepCtrlDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_STEPH, m_steph);
 	DDX_Control(pDX, IDC_STATIC_STEPV, m_stepv);
 	DDX_Control(pDX, IDC_CHECK_TEST_TIMER, m_check_test_timer);
+	DDX_Control(pDX, IDC_COMBO_STYLE, m_combo_style);
+	DDX_Control(pDX, IDC_EDIT_SIZE, m_edit_size);
+	DDX_Control(pDX, IDC_SPIN_SIZE, m_spin_size);
 }
 
 BEGIN_MESSAGE_MAP(CTestCSCStepCtrlDlg, CDialogEx)
@@ -75,6 +78,9 @@ BEGIN_MESSAGE_MAP(CTestCSCStepCtrlDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_WM_WINDOWPOSCHANGED()
 	ON_BN_CLICKED(IDC_CHECK_TEST_TIMER, &CTestCSCStepCtrlDlg::OnBnClickedCheckTestTimer)
+	ON_CBN_SELCHANGE(IDC_COMBO_STYLE, &CTestCSCStepCtrlDlg::OnCbnSelchangeComboStyle)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_SIZE, &CTestCSCStepCtrlDlg::OnDeltaposSpinSize)
+	ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -111,20 +117,45 @@ BOOL CTestCSCStepCtrlDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	m_resize.Create(this);
-	m_resize.Add(IDC_STATIC_STEPH, 0, 0, 100, 50);
-	m_resize.Add(IDC_STATIC_STEPV, 0, 50, 100, 50);
-	m_resize.Add(IDC_CHECK_TEST_TIMER, 100, 100, 0, 0);
-	m_resize.Add(IDOK, 100, 100, 0, 0);
-	m_resize.Add(IDCANCEL, 100, 100, 0, 0);
+	m_resize.Add(IDC_STATIC_STEPH, 0, 0, 100, 0);
+	m_resize.Add(IDC_STATIC_STEPV, 0, 0, 100, 100);
 
-	m_steph.set_style(true);
+	/*
+	thumb_style_circle,
+	thumb_style_circle_with_num,
+	thumb_style_rect,
+	thumb_style_rect_round,
+	thumb_style_diamond,
+	thumb_style_arrow,
+	*/
+	m_combo_style.AddString(_T("thumb_style_circle"));
+	m_combo_style.AddString(_T("thumb_style_circle_with_num"));
+	m_combo_style.AddString(_T("thumb_style_rect"));
+	m_combo_style.AddString(_T("thumb_style_rect_round"));
+	m_combo_style.AddString(_T("thumb_style_diamond"));
+	m_combo_style.AddString(_T("thumb_style_arrow"));
+
+	int style = theApp.GetProfileInt(_T("setting"), _T("style"), thumb_style_circle);
+	Clamp(style, 0, 5);
+	m_combo_style.SetCurSel(style);
+
+
+	int size = theApp.GetProfileInt(_T("setting"), _T("size"), 18);
+	m_edit_size.SetWindowText(i2S(size));
+	m_spin_size.SetRange(10, 40);
+	m_spin_size.SetPos(size);
+
+
+	m_steph.set_style(true, style);
+	m_steph.set_thumb_size(size);
 	m_steph.set_step_count(6);
 	m_steph.set_margin(24, 8, 24, 8);
 	m_steph.set_texts(_T("step 0"), _T("스텝 1"), _T("step 2"), _T("스텝 3"), _T("step 4"), _T("스텝 5"));
 	m_steph.set_pos(2);
 	m_steph.set_step_color(1, Gdiplus::Color::Red);
 
-	m_stepv.set_style(false, thumb_style_rect);
+	m_stepv.set_style(false, style);
+	m_stepv.set_thumb_size(size);
 	m_stepv.set_step_count(6);
 	m_stepv.set_texts(_T("step 0"), _T("스텝 1"), _T("step 2"), _T("스텝 3"), _T("step 4"), _T("스텝 5"));
 	m_stepv.set_pos(2);
@@ -239,4 +270,35 @@ void CTestCSCStepCtrlDlg::OnBnClickedCheckTestTimer()
 		SetTimer(timer_test_step, 1000, NULL);
 	else
 		KillTimer(timer_test_step);
+}
+
+void CTestCSCStepCtrlDlg::OnCbnSelchangeComboStyle()
+{
+	int style = m_combo_style.GetCurSel();
+	if (style < 0 || style >= m_combo_style.GetCount())
+		return;
+
+	m_steph.set_thumb_style(-1, style);
+	m_stepv.set_thumb_style(-1, style);
+}
+
+void CTestCSCStepCtrlDlg::OnDeltaposSpinSize(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	*pResult = 0;
+}
+
+void CTestCSCStepCtrlDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (pScrollBar == (CScrollBar*)&m_spin_size)
+	{
+		int size = m_spin_size.GetPos();
+
+		m_steph.set_thumb_size(size);
+		m_stepv.set_thumb_size(size);
+	}
+
+	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }

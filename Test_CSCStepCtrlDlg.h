@@ -49,4 +49,10 @@ public:
 	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	CButton m_check_test_timer;
 	afx_msg void OnBnClickedCheckTestTimer();
+	CComboBox m_combo_style;
+	CEdit m_edit_size;
+	CSpinButtonCtrl m_spin_size;
+	afx_msg void OnCbnSelchangeComboStyle();
+	afx_msg void OnDeltaposSpinSize(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };
