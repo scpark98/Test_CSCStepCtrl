@@ -221,8 +221,11 @@ HCURSOR CTestCSCStepCtrlDlg::OnQueryDragIcon()
 
 void CTestCSCStepCtrlDlg::OnBnClickedOk()
 {
-	m_steph.reset_step_color();
-	m_stepv.reset_step_color();
+	//m_steph.reset_step_color();
+	//m_stepv.reset_step_color();
+
+	m_steph.set_step_color(-1, Gdiplus::Color::RosyBrown);
+	m_steph.set_step_color(1, Gdiplus::Color::Red);
 }
 
 void CTestCSCStepCtrlDlg::OnBnClickedCancel()
